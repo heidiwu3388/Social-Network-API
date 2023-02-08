@@ -1,24 +1,23 @@
-const { User, Thought } = require('../models');
+const { User, Thought } = require("../models");
 
-
-// Get all users 
+// Get all users
 // GET /api/users/
 function getUsers(req, res) {
   User.find({})
     .select("-__v")
     .then((users) => res.json(users))
-    .catch((err) => res.status(500).json(err))
-  }
-  
-  // Create a user 
-  // POST /api/users/
-  /* example data:
+    .catch((err) => res.status(500).json(err));
+}
+
+// Create a user
+// POST /api/users/
+/* example data:
   {
     "username": "lernantino",
     "email": "lernantino@gmail.com"
   }
   */
- function createUser(req, res) {
+function createUser(req, res) {
   User.create(req.body)
     .select("-__v")
     .then((user) => res.json(user))
@@ -30,13 +29,13 @@ function getUsers(req, res) {
 function getSingleUser(req, res) {
   User.findOne({ _id: req.params.userId })
     .select("-__v")
-    .populate({ path: 'thoughts', select: '-__v' })
-    .populate({ path: 'friends', select: '-__v' })
+    .populate({ path: "thoughts", select: "-__v" })
+    .populate({ path: "friends", select: "-__v" })
     .then((user) => {
-      if (user) {
-        res.json(user);
-      } else {
+      if (!user) {
         res.status(404).json(`No user with id = ${req.params.userId}`);
+      } else {
+        res.json(user);
       }
     })
     .catch((err) => res.status(500).json(err));
@@ -44,25 +43,47 @@ function getSingleUser(req, res) {
 // Update user
 // PUT /api/users/:userId
 function updateUser(req, res) {
-  res.json("Coming Soon")
+  res.json("Coming Soon");
 }
 
 // Delete user
 // DELETE /api/users/:userId
 function deleteUser(req, res) {
-  res.json("Coming Soon")
+  res.json("Coming Soon");
 }
 
 // Add a friend to a user
 // POST /api/users/:userId/friends/:friendId
 function addFriend(req, res) {
-  res.json("Coming Soon")
+  User.findOne({ _id: req.params.friendId }) //look for friend id
+    .then((friend) => {
+      if (!friend) { 
+        //if friend id not found, response with error message
+        res.status(404).json(`Friend id not found (${req.params.friendId})`);
+      } else {
+        //if friend id found, add it to user's friend list
+        return User.findOneAndUpdate(
+          { _id: req.params.userId },
+          { $addToSet: { friends: req.params.friendId } },
+          { new: true }
+        );
+      }
+    })
+    .then((user) => {
+      if (!user) { 
+        //if user id not found, response with error message
+        res.status(404).json(`User id not found (${req.params.userId})`);
+      } else {
+        res.json(user);
+      }
+    })
+    .catch((err) => res.status(500).json(err));
 }
 
 // Remove a friend from a user
 // DELETE /api/users/:userId/friends/:friendId
 function removeFriend(req, res) {
-  res.json("Coming Soon")
+  res.json("Coming Soon");
 }
 
 module.exports = {
@@ -72,5 +93,5 @@ module.exports = {
   updateUser,
   deleteUser,
   addFriend,
-  removeFriend
+  removeFriend,
 };

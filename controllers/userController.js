@@ -40,6 +40,7 @@ function getSingleUser(req, res) {
     })
     .catch((err) => res.status(500).json(err));
 }
+
 // Update user
 // PUT /api/users/:userId
 function updateUser(req, res) {
@@ -109,7 +110,20 @@ function addFriend(req, res) {
 // Remove a friend from a user
 // DELETE /api/users/:userId/friends/:friendId
 function removeFriend(req, res) {
-  res.json("Coming Soon");
+  User.findOneAndUpdate(
+    { _id: req.params.userId },
+    { $pull: { friends: req.params.friendId } },
+    { new: true }
+  )
+    .select("-__v")
+    .then((user) => {
+      if (!user) {
+        res.status(404).json(`No user with id = ${req.params.userId}`);
+      } else {
+        res.status(200).json(user);
+      }
+    })
+    .catch((err) => res.status(500).json(err));
 }
 
 module.exports = {

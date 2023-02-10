@@ -6,11 +6,13 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server",
-    "seed": "node utils/seed"
+    "seed": "node utils/seed",
+    "dev": "nodemon server"
   },
   "dependencies": {
     "express": "^4.17.1",
-    "mongoose": "^6.0.13"
+    "mongoose": "^6.0.13",
+    "nodemon": "^2.0.20"
   },
   "repository": {
     "type": "git",

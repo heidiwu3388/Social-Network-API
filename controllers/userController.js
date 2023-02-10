@@ -83,25 +83,26 @@ function deleteUser(req, res) {
 function addFriend(req, res) {
   User.findOne({ _id: req.params.friendId }) //look for friend id
     .then((friend) => {
-      if (!friend) {
-        //if friend id not found, response with error message
+      if (!friend) { //if friend id not found, send 404
         res.status(404).json(`Friend id not found (${req.params.friendId})`);
-      } else {
-        //if friend id found, add it to user's friend list
-        return User.findOneAndUpdate(
+        return;
+      } 
+      // add friend id to user's friend list
+      User.findOneAndUpdate(
           { _id: req.params.userId },
           { $addToSet: { friends: req.params.friendId } },
           { new: true }
-        );
-      }
-    })
-    .then((user) => {
-      if (!user) {
-        //if user id not found, response with error message
-        res.status(404).json(`User id not found (${req.params.userId})`);
-      } else {
-        res.json(user);
-      }
+        )
+        .select("-__v")
+        .populate({path: "friends", select: "-__v"})
+        .then((user) => {
+          if (!user) { //if user id not found, send 404
+            res.status(404).json(`User id not found (${req.params.userId})`);
+            return;
+          } 
+          res.status(200).json(user);
+        })
+        .catch((err) => res.status(500).json(err));
     })
     .catch((err) => res.status(500).json(err));
 }

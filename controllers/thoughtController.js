@@ -49,19 +49,50 @@ function createThought(req, res) {
 // Get a single thought
 // GET /api/thoughts/:thoughtId
 function getSingleThought(req, res) {
-  res.json("Coming Soon")
+  Thought.findOne({ _id: req.params.thoughtId })
+    .select("-__v")
+    .then((thought) => {
+      if (!thought) {
+        res.status(404).json(`No thought with id = ${req.params.thoughtId}`);
+      } else {
+        res.status(200).json(thought);
+      }
+    })
+    .catch((err) => res.status(500).json(err));
 }
 
 // Update thought
 // PUT /api/thoughts/:thoughtId
 function updateThought(req, res) {
-  res.json("Coming Soon")
+  Thought.findOneAndUpdate(
+    { _id: req.params.thoughtId },
+    { $set: req.body },
+    { new: true }
+  )
+    .select("-__v")
+    .then((thought) => {
+      if (!thought) {
+        res.status(404).json(`No thought with id = ${req.params.thoughtId}`);
+      } else {
+        res.status(200).json(thought);
+      }
+    })
+    .catch((err) => res.status(500).json(err));
 }
 
 // Delete thought
 // DELETE /api/thoughts/:thoughtId
 function deleteThought(req, res) {
-  res.json("Coming Soon")
+  Thought.findOneAndDelete({ _id: req.params.thoughtId })
+    .select("-__v")
+    .then((thought) => {
+      if (!thought) { // if thought not found, send 404
+        res.status(404).json(`No thought with id = ${req.params.thoughtId}`);
+      } else {
+        res.status(200).json(`Thought deleted 🎉`);
+      }
+    })
+    .catch((err) => res.status(500).json(err));
 }
 
 // Add a reaction to a thought

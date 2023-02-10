@@ -66,15 +66,14 @@ function deleteUser(req, res) {
   User.findOneAndDelete({ _id: req.params.userId })
     .select("-__v")
     .then((user) => {
-      if (!user) {
+      if (!user) { // if no user is found, send 404
         res.status(404).json(`No user with id = ${req.params.userId}`);
-      } else {
-        // if user found and deleted, delete the associated thoughts
-        return Thought.deleteMany({ _id: { $in: user.thoughts } });
-      }
-    })
-    .then(() => {
-      res.status(200).json(`User id = ${req.params.userId} deleted`)
+        return;
+      } 
+      // delete the associated thoughts
+      Thought.deleteMany({ _id: { $in: user.thoughts } })
+        .then(() => res.status(200).json(`User and associated thoughts deleted`))
+        .catch((err) => res.status(500).json(err));
     })
     .catch((err) => res.status(500).json(err));
 }

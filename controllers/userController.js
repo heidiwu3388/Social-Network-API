@@ -72,7 +72,7 @@ function deleteUser(req, res) {
       } 
       // delete the associated thoughts
       Thought.deleteMany({ _id: { $in: user.thoughts } })
-        .then(() => res.status(200).json(`User and associated thoughts deleted`))
+        .then(() => res.status(200).json(`User and associated thoughts deleted 🎉`))
         .catch((err) => res.status(500).json(err));
     })
     .catch((err) => res.status(500).json(err));

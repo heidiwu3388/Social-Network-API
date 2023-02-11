@@ -22,7 +22,7 @@ function createThought(req, res) {
   User.findById(req.body.userId) //check if the user exists
     .then((user) => {
       if (!user) { // if no user is found, send 404
-        res.status(404).json( `User id not found! (${req.body.userId})` );
+        res.status(404).json( `🚫 User id not found! (${req.body.userId})` );
         return;
       } 
       // create a new thought
@@ -53,7 +53,7 @@ function getSingleThought(req, res) {
     .select("-__v")
     .then((thought) => {
       if (!thought) {
-        res.status(404).json(`No thought with id = ${req.params.thoughtId}`);
+        res.status(404).json(`🚫 Thought id not found! (${req.params.thoughtId})`);
       } else {
         res.status(200).json(thought);
       }
@@ -72,7 +72,7 @@ function updateThought(req, res) {
     .select("-__v")
     .then((thought) => {
       if (!thought) {
-        res.status(404).json(`No thought with id = ${req.params.thoughtId}`);
+        res.status(404).json(`🚫 Thought id not found! (${req.params.thoughtId})`);
       } else {
         res.status(200).json(thought);
       }
@@ -87,7 +87,7 @@ function deleteThought(req, res) {
     .select("-__v")
     .then((thought) => {
       if (!thought) { // if thought not found, send 404
-        res.status(404).json(`No thought with id = ${req.params.thoughtId}`);
+        res.status(404).json(`🚫 Thought id not found! (${req.params.thoughtId})`);
       } else {
         res.status(200).json(`Thought deleted 🎉`);
       }
@@ -98,13 +98,39 @@ function deleteThought(req, res) {
 // Add a reaction to a thought
 // POST /api/thoughts/:thoughtId/reactions
 function addReaction(req, res) {
-  res.json("Coming Soon")
+  Thought.findOneAndUpdate(
+      { _id: req.params.thoughtId },
+      { $push: { reactions: req.body } },
+      { new: true }
+    )
+    .select("-__v")
+    .then((thought) => {
+      if (!thought) { //if thought id not found, send 404
+        res.status(404).json(`🚫 Thought id not found! (${req.params.thoughtId})`);
+      } else {
+        res.status(200).json(thought);
+      } 
+    })
+    .catch((err) => res.status(500).json(err));
 }
 
 // Remove a reaction from a thought
-// DELETE /api/thoughts/:thoughtId/reactions/:reactionsId
+// DELETE /api/thoughts/:thoughtId/reactions/:reactionId
 function removeReaction(req, res) {
-  res.json("Coming Soon")
+  Thought.findOneAndUpdate(
+    { _id: req.params.thoughtId },
+    { $pull: { reactions: {reactionId: req.params.reactionId } } },
+    { new: true }
+  )
+    .select("-__v")
+    .then((thought) => {
+      if (!thought) { // if thought id not found, send 404
+        res.status(404).json(`🚫 Thought id not found! (${req.params.thoughtId})`);
+      } else {
+        res.status(200).json({message: "reaction removed 🎉", thought: thought});
+      }
+    })
+    .catch((err) => res.status(500).json(err));
 }
 
 module.exports = {

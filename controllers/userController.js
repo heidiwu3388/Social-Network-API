@@ -33,7 +33,7 @@ function getSingleUser(req, res) {
     .populate({ path: "friends", select: "-__v" })
     .then((user) => {
       if (!user) {
-        res.status(404).json(`No user with id = ${req.params.userId}`);
+        res.status(404).json(`🚫 User id not found! (${req.params.userId})`);
       } else {
         res.status(200).json(user);
       }
@@ -52,7 +52,7 @@ function updateUser(req, res) {
     .select("-__v")
     .then((user) => {
       if (!user) {
-        res.status(404).json(`No user with id = ${req.params.userId}`);
+        res.status(404).json(`🚫 User id not found! (${req.params.userId})`);
       } else {
         res.status(200).json(user);
       }
@@ -67,7 +67,7 @@ function deleteUser(req, res) {
     .select("-__v")
     .then((user) => {
       if (!user) { // if no user is found, send 404
-        res.status(404).json(`No user with id = ${req.params.userId}`);
+        res.status(404).json(`🚫 User id not found! (${req.params.userId})`);
         return;
       } 
       // delete the associated thoughts
@@ -84,7 +84,7 @@ function addFriend(req, res) {
   User.findOne({ _id: req.params.friendId }) //look for friend id
     .then((friend) => {
       if (!friend) { //if friend id not found, send 404
-        res.status(404).json(`Friend id not found (${req.params.friendId})`);
+        res.status(404).json(`🚫 Friend id not found (${req.params.friendId})`);
         return;
       } 
       // add friend id to user's friend list
@@ -97,7 +97,7 @@ function addFriend(req, res) {
         .populate({path: "friends", select: "-__v"})
         .then((user) => {
           if (!user) { //if user id not found, send 404
-            res.status(404).json(`User id not found (${req.params.userId})`);
+            res.status(404).json(`🚫 User id not found! (${req.params.userId})`);
             return;
           } 
           res.status(200).json(user);
@@ -118,7 +118,7 @@ function removeFriend(req, res) {
     .select("-__v")
     .then((user) => {
       if (!user) {
-        res.status(404).json(`No user with id = ${req.params.userId}`);
+        res.status(404).json(`🚫 User id not found! (${req.params.userId})`);
       } else {
         res.status(200).json(user);
       }

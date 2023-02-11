@@ -4,7 +4,6 @@ const { User, Thought } = require("../models");
 // GET /api/users/
 function getUsers(req, res) {
   User.find({})
-    .select("-__v")
     .then((users) => res.status(200).json(users))
     .catch((err) => res.status(500).json(err));
 }
@@ -27,9 +26,8 @@ function createUser(req, res) {
 // GET /api/users/:userId
 function getSingleUser(req, res) {
   User.findOne({ _id: req.params.userId })
-    .select("-__v")
-    .populate({ path: "thoughts", select: "-__v" })
-    .populate({ path: "friends", select: "-__v" })
+    .populate({ path: "thoughts" })
+    .populate({ path: "friends"})
     .then((user) => {
       if (!user) {
         res.status(404).json(`🚫 User id not found! (${req.params.userId})`);
@@ -48,7 +46,6 @@ function updateUser(req, res) {
     { $set: req.body },
     { new: true }
   )
-    .select("-__v")
     .then((user) => {
       if (!user) {
         res.status(404).json(`🚫 User id not found! (${req.params.userId})`);
@@ -63,7 +60,6 @@ function updateUser(req, res) {
 // DELETE /api/users/:userId
 function deleteUser(req, res) {
   User.findOneAndDelete({ _id: req.params.userId })
-    .select("-__v")
     .then((user) => {
       if (!user) { // if no user is found, send 404
         res.status(404).json(`🚫 User id not found! (${req.params.userId})`);
@@ -92,8 +88,7 @@ function addFriend(req, res) {
           { $addToSet: { friends: req.params.friendId } },
           { new: true }
         )
-        .select("-__v")
-        .populate({path: "friends", select: "-__v"})
+        .populate({path: "friends"})
         .then((user) => {
           if (!user) { //if user id not found, send 404
             res.status(404).json(`🚫 User id not found! (${req.params.userId})`);
@@ -114,7 +109,6 @@ function removeFriend(req, res) {
     { $pull: { friends: req.params.friendId } },
     { new: true }
   )
-    .select("-__v")
     .then((user) => {
       if (!user) {
         res.status(404).json(`🚫 User id not found! (${req.params.userId})`);

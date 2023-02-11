@@ -1,10 +1,10 @@
-const { thought, Thought, User } = require('../models');
+// import models
+const { Thought, User } = require('../models');
 
 // Get all thoughts 
 // GET /api/thoughts/
 function getThoughts(req, res) {
   Thought.find({})
-    .select("-__v")
     .then((thoughts) => res.status(200).json(thoughts))
     .catch((err) => res.status(500).json(err));
 }
@@ -34,12 +34,11 @@ function createThought(req, res) {
               { $addToSet: { thoughts: thought._id } },
               { new: true }
             )
-          .select("-__v")
-          .populate({ path: "thoughts", select: "-__v" });
+          .populate({ path: "thoughts"});
         })
         .then((user) => {
           // return the updated user document
-          res.status(200).json(user);
+          res.status(200).json({message: "Thought created, and attached to the user! 🎉", user: user});
         })
         .catch((err) => res.status(500).json(err));
     })
@@ -50,7 +49,6 @@ function createThought(req, res) {
 // GET /api/thoughts/:thoughtId
 function getSingleThought(req, res) {
   Thought.findOne({ _id: req.params.thoughtId })
-    .select("-__v")
     .then((thought) => {
       if (!thought) {
         res.status(404).json(`🚫 Thought id not found! (${req.params.thoughtId})`);
@@ -69,12 +67,11 @@ function updateThought(req, res) {
     { $set: req.body },
     { new: true }
   )
-    .select("-__v")
     .then((thought) => {
       if (!thought) {
         res.status(404).json(`🚫 Thought id not found! (${req.params.thoughtId})`);
       } else {
-        res.status(200).json(thought);
+        res.status(200).json({message: "Thought updated! 🎉", thought: thought});
       }
     })
     .catch((err) => res.status(500).json(err));
@@ -84,7 +81,6 @@ function updateThought(req, res) {
 // DELETE /api/thoughts/:thoughtId
 function deleteThought(req, res) {
   Thought.findOneAndDelete({ _id: req.params.thoughtId })
-    .select("-__v")
     .then((thought) => {
       if (!thought) { // if thought not found, send 404
         res.status(404).json(`🚫 Thought id not found! (${req.params.thoughtId})`);
@@ -103,12 +99,11 @@ function addReaction(req, res) {
       { $push: { reactions: req.body } },
       { new: true }
     )
-    .select("-__v")
     .then((thought) => {
       if (!thought) { //if thought id not found, send 404
         res.status(404).json(`🚫 Thought id not found! (${req.params.thoughtId})`);
       } else {
-        res.status(200).json(thought);
+        res.status(200).json({message: "Reaction added to the thought! 🎉", thought: thought});
       } 
     })
     .catch((err) => res.status(500).json(err));
@@ -122,12 +117,11 @@ function removeReaction(req, res) {
     { $pull: { reactions: {reactionId: req.params.reactionId } } },
     { new: true }
   )
-    .select("-__v")
     .then((thought) => {
       if (!thought) { // if thought id not found, send 404
         res.status(404).json(`🚫 Thought id not found! (${req.params.thoughtId})`);
       } else {
-        res.status(200).json({message: "reaction removed 🎉", thought: thought});
+        res.status(200).json({message: "reaction removed from the thought! 🎉", thought: thought});
       }
     })
     .catch((err) => res.status(500).json(err));

@@ -19,12 +19,13 @@ const reactionSchema = new Schema(
     createdAt: {
       type: Date,
       default: Date.now,
-      get: timestamp => dateFormat(timestamp, { monthLength: 'short', dateSuffix: true }),
+      get: timestamp => dateFormat(timestamp, { monthLength: 'short', dateSuffix: true }), //geter function to format the date
     },
   },
   {
     toJSON: {
-      getters: true,
+      getters: true, // enable getters
+      versionKey: false, // remove __v
     },
     id: false,
   }

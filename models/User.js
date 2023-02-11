@@ -29,12 +29,14 @@ const userSchema = new Schema(
   },
   {
     toJSON: {
-      virtuals: true,
+      virtuals: true, // enable virtuals
+      versionKey: false, // remove __v
     },
     id: false,
   }
 );
 
+// create a virtual field "friendCount" and it's getter function to return the friends count
 userSchema.virtual('friendCount').get(function () {
   return this.friends.length;
 });

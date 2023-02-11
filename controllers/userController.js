@@ -19,7 +19,6 @@ function getUsers(req, res) {
   */
 function createUser(req, res) {
   User.create(req.body)
-    .select("-__v")
     .then((user) => res.status(200).json(user))
     .catch((err) => res.status(500).json(err));
 }

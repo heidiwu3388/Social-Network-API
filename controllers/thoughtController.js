@@ -85,7 +85,7 @@ function deleteThought(req, res) {
       if (!thought) { // if thought not found, send 404
         res.status(404).json(`🚫 Thought id not found! (${req.params.thoughtId})`);
       } else {
-        res.status(200).json(`Thought deleted 🎉`);
+        res.status(200).json(`Thought deleted 🎉 (${req.params.thoughtId})`);
       }
     })
     .catch((err) => res.status(500).json(err));

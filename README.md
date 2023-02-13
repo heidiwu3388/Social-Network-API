@@ -95,12 +95,13 @@ Please watch this video [https://www.youtube.com/watch?v=RAhfnYqq0Yw](https://ww
             - DELECT http://localhost:3001/api/thoughts/:thouthgId/reactions/:reactionId
 
 ## Built With
-    - Server:
-        - *Node.js*
-        - *Express.js*
-    - Database:
-        - *MongoDB*
-        - *Mongoose* as the ODM
+- Server:
+    - Node.js
+    - Express.js
+- Database:
+    - MongoDB
+    - Mongoose
+
 
 ## License
 
